@@ -34,11 +34,9 @@ class RepositoriesTableViewController: UITableViewController {
         
         cell.textLabel?.text = repository.name
         cell.detailTextLabel?.text = repository.login
-        cell.imageView?.image = nil
         
         cell.imageView?.contentMode = .scaleAspectFit
-        cell.imageView?.sd_cancelCurrentImageLoad()
-        //cell.imageView?.kf.cancelDownloadTask()
+        //cell.imageView?.sd_cancelCurrentImageLoad()
         if let url = URL(string: repository.photo) {
             cell.imageView?.sd_setImage(with: url)
         }
