@@ -7,13 +7,59 @@
 //
 
 import UIKit
+import Kingfisher
 
 class DetailsViewController: UIViewController {
-
+    
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+    
+    @IBOutlet weak var photo: UIImageView!
+    @IBOutlet weak var login: UILabel!
+    
+    @IBOutlet weak var message: UITextView!
+    @IBOutlet weak var author: UILabel!
+    @IBOutlet weak var dateLabel: UILabel!
+    
+    var service: ServiceProtocol = GitHubService()
+    var repository: Repository!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        // Do any additional setup after loading the view.
+        
+        navigationItem.title = repository.name
+        login.text = repository.login
+        if let url = URL(string: repository.photo) {
+            photo?.kf.setImage(with: url)
+        }
+        
+        service.getLastCommit(repository: repository, setupCommit)
     }
-
+    
+    private func setupCommit(_ commit: Commit?) {
+        guard let commit = commit else {
+            return
+        }
+        
+        message.text = commit.message
+        author.text = commit.author
+        
+        let inputDateFormatter = DateFormatter()
+        inputDateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        if let date = inputDateFormatter.date(from: commit.date) {
+            let outputDateFormatter = DateFormatter()
+            outputDateFormatter.dateFormat = "dd.MM.yyyy"
+            dateLabel.text = outputDateFormatter.string(from: date)
+        }
+        
+        if !commit.parents.isEmpty {
+            let ending = commit.parents.count == 1 ? "" : "s"
+            message.text += "\n\nParent\(ending):\n"
+                + commit.parents.reduce("", { (result, sha) -> String in
+                result + sha + "\n"
+            })
+        }
+        
+        activityIndicator.stopAnimating()
+    }
+    
 }

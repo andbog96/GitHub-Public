@@ -15,8 +15,6 @@ class RepositoriesTableViewController: UITableViewController {
     
     private let activityIndicatorView = UIActivityIndicatorView(style: .gray)
     
-    private var currentIndex = 0
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -31,37 +29,35 @@ class RepositoriesTableViewController: UITableViewController {
         
         tableView.isHidden = true
         tableView.prefetchDataSource = self
-
+        
         model.delegate = self
         model.load()
     }
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return model.repositories?.count ?? 0
     }
-
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier,
-                                                     for: indexPath) as? TableViewCell,
+                                                       for: indexPath) as? TableViewCell,
             let repository = model.repositories?[indexPath.row] else {
-            return TableViewCell()
+                return TableViewCell()
         }
         
         cell.setup(repository: repository)
-
+        
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        currentIndex = indexPath.row
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        guard let detailsViewController = segue.destination as? DetailsViewController,
+            let repositories = model.repositories,
+            let index = tableView.indexPathForSelectedRow?.row else { return }
+        
+        detailsViewController.repository = repositories[index]
     }
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let detailsViewController = segue.destination as? DetailsViewController else { return }
-        
-        detailsViewController
-    }
-
 }
 
 extension RepositoriesTableViewController: UITableViewDataSourcePrefetching {

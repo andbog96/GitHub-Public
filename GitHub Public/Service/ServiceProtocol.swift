@@ -12,4 +12,6 @@ protocol ServiceProtocol {
     
     func getRepositories(since id: Int, _ callback: @escaping ([Repository]?) -> Void)
     
+    func getLastCommit(repository: Repository, _ callback: @escaping (Commit?) -> Void)
+    
 }

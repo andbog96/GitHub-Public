@@ -9,17 +9,15 @@
 import Foundation
 
 struct Repository {
-    
     let id: Int
     let login: String
     let photo: String
     let name: String
-    //let lastCommit: Commit
-    
-    struct Commit {
-        let message: String
-        let autor: String
-        let date: String
-        let sha: String
-    }
+}
+
+struct Commit {
+    let message: String
+    let author: String
+    let date: String
+    let parents: [String]
 }
