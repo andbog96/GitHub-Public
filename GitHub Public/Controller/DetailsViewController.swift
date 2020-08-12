@@ -32,11 +32,30 @@ class DetailsViewController: UIViewController {
             photo?.kf.setImage(with: url)
         }
         
+        disposeView()
+        
         service.getLastCommit(repository: repository, setupCommit)
+    }
+    
+    private func disposeView() {
+        message.text = nil
+        author.text = nil
+        dateLabel.text = nil
+        message.text = nil
     }
     
     private func setupCommit(_ commit: Commit?) {
         guard let commit = commit else {
+            let alertController = UIAlertController(title: "Some server error",
+                                                    message: "Try connect later",
+                                                    preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "OK", style: .default) { _ in
+                self.service.getLastCommit(repository: self.repository, self.setupCommit)
+            }
+            
+            alertController.addAction(alertAction)
+            self.present(alertController, animated: true)
+            
             return
         }
         

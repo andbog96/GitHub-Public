@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import SDWebImage
 
 class RepositoriesTableViewController: UITableViewController {
     
@@ -71,6 +70,20 @@ extension RepositoriesTableViewController: UITableViewDataSourcePrefetching {
 extension RepositoriesTableViewController: RepositoriesModelDelegate {
     
     func modelDidLoad() {
+        guard model.repositories != nil else {
+            let alertController = UIAlertController(title: "Some server error",
+                                                    message: "Try connect later",
+                                                    preferredStyle: .alert)
+            let alertAction = UIAlertAction(title: "OK", style: .default) { _ in
+                self.model.load()
+            }
+            
+            alertController.addAction(alertAction)
+            self.present(alertController, animated: true)
+            
+            return
+        }
+        
         tableView.reloadData()
         tableView.isHidden = false
         activityIndicatorView.removeFromSuperview()

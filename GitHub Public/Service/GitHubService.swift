@@ -11,10 +11,8 @@ import Alamofire
 
 struct GitHubService: ServiceProtocol {
  
-    private let repositoriesURLString = "https://api.github.com/repositories"
-    
     private func getRepositoriesURLString(_ id: Int) -> String {
-        repositoriesURLString + "?since=\(id)"
+        "https://api.github.com/repositories?since=\(id)"
     }
     
     private func getLastCommitsURLString(login: String, name: String) -> String {

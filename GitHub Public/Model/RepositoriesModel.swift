@@ -34,11 +34,12 @@ class RepositoriesModel: RepositoriesModelProtocol {
         
         if maxIndex >= repositories.count - 1 - prefetchingInterval {
             lastPrefetchedIndex = repositories.count
-            print("prefetch", lastPrefetchedIndex)
             
             let lastID = repositories.last?.id ?? 0
             service.getRepositories(since: lastID + 1) { response in
                 guard let response = response else {
+                    self.lastPrefetchedIndex = 0
+                    
                     return
                 }
                 
