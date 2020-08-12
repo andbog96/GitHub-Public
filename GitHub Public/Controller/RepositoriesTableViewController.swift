@@ -13,9 +13,23 @@ class RepositoriesTableViewController: UITableViewController {
     
     var model: RepositoriesModelProtocol = RepositoriesModel()
     
+    private let activityIndicatorView = UIActivityIndicatorView(style: .gray)
+    
+    private var currentIndex = 0
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        navigationController?.view.backgroundColor = .white
+        
+        activityIndicatorView.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicatorView.startAnimating()
+        view.addSubview(activityIndicatorView)
+        activityIndicatorView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        activityIndicatorView.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,
+                                                       constant: 50).isActive = true
+        
+        tableView.isHidden = true
         tableView.prefetchDataSource = self
 
         model.delegate = self
@@ -23,30 +37,29 @@ class RepositoriesTableViewController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return model.repositories?.count ?? 1
+        return model.repositories?.count ?? 0
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier, for: indexPath)
-        guard let repository = model.repositories?[indexPath.row] else {
-            return cell
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: TableViewCell.reuseIdentifier,
+                                                     for: indexPath) as? TableViewCell,
+            let repository = model.repositories?[indexPath.row] else {
+            return TableViewCell()
         }
         
-        cell.textLabel?.text = repository.name
-        cell.detailTextLabel?.text = repository.login
-        
-        cell.imageView?.contentMode = .scaleAspectFit
-        //cell.imageView?.sd_cancelCurrentImageLoad()
-        if let url = URL(string: repository.photo) {
-            cell.imageView?.sd_setImage(with: url)
-        }
+        cell.setup(repository: repository)
 
         return cell
     }
-
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        currentIndex = indexPath.row
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        guard let detailsViewController = segue.destination as? DetailsViewController else { return }
+        
+        detailsViewController
     }
 
 }
@@ -63,6 +76,8 @@ extension RepositoriesTableViewController: RepositoriesModelDelegate {
     
     func modelDidLoad() {
         tableView.reloadData()
+        tableView.isHidden = false
+        activityIndicatorView.removeFromSuperview()
     }
     
 }

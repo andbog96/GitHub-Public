@@ -14,5 +14,12 @@ struct Repository {
     let login: String
     let photo: String
     let name: String
+    //let lastCommit: Commit
     
+    struct Commit {
+        let message: String
+        let autor: String
+        let date: String
+        let sha: String
+    }
 }

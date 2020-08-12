@@ -7,31 +7,38 @@
 //
 
 import UIKit
+import Kingfisher
 
 class TableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "TableViewCell"
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: .subtitle, reuseIdentifier: reuseIdentifier)
-        
-        //dispose()
-    }
+    private lazy var placeholderImage: UIImage = {
+        let size = CGSize(width: frame.height, height: frame.height)
+        return UIGraphicsImageRenderer(size: size).image { rendererContext in
+            UIColor.white.setFill()
+            rendererContext.fill(CGRect(origin: .zero, size: size))
+        }
+    }()
     
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
+    func setup(repository: Repository) {
+        textLabel?.text = repository.name
+        detailTextLabel?.text = repository.login
         
-        //dispose()
+        imageView?.contentMode = .scaleAspectFit
+        imageView?.kf.indicatorType = .activity
+        if let url = URL(string: repository.photo) {
+            imageView?.kf.setImage(with: url, placeholder: placeholderImage)
+        }
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
         
-        dispose()
-    }
-    
-    private func dispose() {
+        textLabel?.text = nil
+        detailTextLabel?.text = nil
+        imageView?.kf.cancelDownloadTask()
         imageView?.image = nil
     }
-
+    
 }

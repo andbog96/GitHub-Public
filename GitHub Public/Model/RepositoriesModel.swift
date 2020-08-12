@@ -15,6 +15,7 @@ class RepositoriesModel: RepositoriesModelProtocol {
     
     private(set) var repositories: [Repository]? = nil
     
+    private let prefetchingInterval = 50
     private var lastPrefetchedIndex = 0
     
     func load() {
@@ -31,12 +32,12 @@ class RepositoriesModel: RepositoriesModelProtocol {
             return
         }
         
-        if maxIndex == repositories.count - 1 {
-            lastPrefetchedIndex = maxIndex
-            print(indices.max()!)
+        if maxIndex >= repositories.count - 1 - prefetchingInterval {
+            lastPrefetchedIndex = repositories.count
+            print("prefetch", lastPrefetchedIndex)
             
-            let last = repositories.last?.id ?? 0
-            service.getRepositories(since: last + 1) { response in
+            let lastID = repositories.last?.id ?? 0
+            service.getRepositories(since: lastID + 1) { response in
                 guard let response = response else {
                     return
                 }
